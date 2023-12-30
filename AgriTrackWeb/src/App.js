@@ -1,9 +1,21 @@
+import React from 'react';
 import './App.css';
-import React from 'react'
+
 function App() {
   return (
     <div className="App">
-      <h1>Agritrack</h1>
+      <header className="header">
+        AgriTrack
+      </header>
+      <aside className="sidebar">
+        {/* Sidebar content */}
+      </aside>
+      <main className="content">
+        <div className="card">
+          {/* Card content */}
+        </div>
+        {/* More cards */}
+      </main>
     </div>
   );
 }
