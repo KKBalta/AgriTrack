@@ -1,0 +1,55 @@
+
+/* ArchivePage.css */
+
+.archive-page {
+    padding: 20px;
+    margin-left: 200px; /* Adjust based on your sidebar width */
+  }
+  
+  .search-bar {
+    margin-bottom: 20px;
+  }
+  
+  .search-bar input {
+    padding: 10px;
+    margin-right: 5px;
+  }
+  
+  .search-bar button {
+    padding: 10px;
+  }
+  
+  .archive-section {
+    margin-bottom: 20px;
+  }
+  
+  .archive-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .archive-item {
+    flex: 0 1 calc(20% - 10px); /* Adjust the percentage for more or fewer items per row */
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  @media (max-width: 768px) {
+    .archive-item {
+      flex: 0 1 calc(50% - 10px);
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .archive-page {
+      margin-left: 0;
+    }
+  
+    .archive-item {
+      flex: 0 1 100%;
+    }
+  }
+  

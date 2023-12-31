@@ -1,0 +1,64 @@
+/* FinancePage.css */
+
+.finance-page {
+  padding: 20px;
+  margin-left: 200px; /* Adjust if sidebar width changes */
+}
+
+.finance-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.finance-table th,
+.finance-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.finance-table th {
+  background-color: #f2f2f2;
+}
+
+.finance-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.finance-table tr:hover {
+  background-color: #f1f1f1; /* Hover color */
+}
+
+/* Pagination styles */
+.pagination {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.pagination button {
+  border: none;
+  background-color: #ddd;
+  padding: 5px 10px;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.pagination button:hover {
+  background-color: #ccc;
+}
+
+.pagination button.active {
+  background-color: #4CAF50; /* Active button color */
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .finance-page {
+    margin-left: 0;
+  }
+  /* Other responsive adjustments */
+}
+
+/* Additional styles can be added as needed */
