@@ -6,7 +6,7 @@ const FinancePage = () => {
   const financeData = [
     // Add your data objects here
     { date: '3/7/22', amount: 1, kg: 65, price: 35, /* ...other data... */ },
-    // ... more data
+    // ... more dataf
   ];
 
   return (
