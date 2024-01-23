@@ -1,23 +1,25 @@
 const express = require('express');
 const app = express();
-const mongoose = require('mongoose');
-const Group = require('./models/group'); // Import the Group model
+const connectDB = require('./database'); // Import the connectDB function
+const groupRoutes = require('./routes/groupRoutes'); // Adjust the path as needed
+const saleRecordRoutes = require('./routes/saleRecordRoutes'); // Adjust the path as needed
 
-mongoose.connect('mongodb://localhost/yourDatabaseName', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false
-})
-.then(() => console.log('Connected to MongoDB...'))
-.catch(err => console.error('Could not connect to MongoDB...', err));
+// Connect to MongoDB
+connectDB();
 
-app.use(express.json()); // Middleware to parse JSON bodies
+// Middleware to parse JSON bodies
+app.use(express.json());
 
+// Use groupRoutes and saleRecordRoutes with '/api' prefix
+app.use('/api', groupRoutes);
+app.use('/api', saleRecordRoutes);
+
+// Define a simple route
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
