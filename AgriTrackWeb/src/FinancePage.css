@@ -1,15 +1,79 @@
 /* FinancePage.css */
 
-.finance-page {
-  padding: 20px;
-  margin-left: 200px; /* Adjust if sidebar width changes */
+/* Header row background color */
+.finance-table-headers {
+  background-color: gray;
 }
 
+/* Container styles */
+.finance-page-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Button styles */
+.finance-create-button, .finance-delete-button {
+  margin-top: 10px;
+  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Disabled button styles */
+.finance-create-button:disabled, .finance-delete-button:disabled {
+  background-color: #cccccc;
+}
+
+/* Button group styles */
+.finance-button-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+/* Table footer styles */
+.finance-table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+}
+
+/* Pagination button styles */
+.finance-pagination button {
+  margin-right: 5px;
+}
+
+/* Container for the form and table */
+.finance-form-and-table-container {
+  width: 100%;
+  max-width: 800px; /* or any appropriate width */
+  margin: auto;
+}
+
+/* Main container styles */
+.finance-page {
+  padding: 20px;
+}
+
+/* Header styles */
+.finance-page h1 {
+  margin-bottom: 20px;
+}
+
+/* Table styles */
 .finance-table {
   width: 100%;
   border-collapse: collapse;
+  margin-bottom: 20px;
 }
 
+/* Table header and cell styles */
 .finance-table th,
 .finance-table td {
   border: 1px solid #ddd;
@@ -17,48 +81,41 @@
   text-align: left;
 }
 
+/* Table header background color */
 .finance-table th {
   background-color: #f2f2f2;
 }
 
+/* Alternate row background color */
 .finance-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
-.finance-table tr:hover {
-  background-color: #f1f1f1; /* Hover color */
+/* Row highlighting styles based on selectedIds */
+.finance-table tr.selected-row {
+  background-color: #007bff; /* Change to your desired highlight color */
+  color: white; /* Change text color for better contrast */
+  font-weight: bold; /* Optionally, make the text bold for selected rows */
 }
 
-/* Pagination styles */
-.pagination {
+/* Pagination container styles */
+.finance-pagination {
   display: flex;
   justify-content: center;
-  padding: 20px;
+  align-items: center;
+  padding: 0;
 }
 
-.pagination button {
+/* Pagination button styles */
+.finance-pagination button {
   border: none;
   background-color: #ddd;
-  padding: 5px 10px;
   margin: 0 5px;
+  padding: 5px 10px;
   cursor: pointer;
 }
 
-.pagination button:hover {
+/* Pagination button hover styles */
+.finance-pagination button:hover {
   background-color: #ccc;
 }
-
-.pagination button.active {
-  background-color: #4CAF50; /* Active button color */
-  color: white;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .finance-page {
-    margin-left: 0;
-  }
-  /* Other responsive adjustments */
-}
-
-/* Additional styles can be added as needed */

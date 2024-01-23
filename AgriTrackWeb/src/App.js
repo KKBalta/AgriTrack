@@ -50,7 +50,7 @@ function App() {
               path="/groups"
               element={<GroupsPage updateArchiveData={updateArchiveData} />} // Pass the updateArchiveData function as a prop
             />
-            <Route path="/finance" element={<FinancePage />} />
+            <Route path="/finance" element={<FinancePage updateArchiveData={updateArchiveData} />} /> {/* Pass the updateArchiveData function as a prop */}
             <Route path="/archive" element={<ArchivePage archiveData={archiveData} />} /> {/* Pass archiveData as a prop */}
             <Route path="/" element={<HomePage />} />
           </Routes>

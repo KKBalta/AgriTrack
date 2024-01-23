@@ -1,29 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import './ArchivePage.css'; // Make sure the CSS file is in the same directory
+import './ArchivePage.css';
 
-const ArchivePage = ({ groupData }) => {
+const ArchivePage = ({ archiveData }) => {
   const [searchTerm, setSearchTerm] = useState('');
-
-  // State to hold the list of years based on groupData
   const [yearsList, setYearsList] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(null);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
+  const handleYearClick = (year) => {
+    setSelectedYear(year);
+  };
+
   useEffect(() => {
-    // Check if groupData is defined before processing it
-    if (groupData) {
+    // Check if archiveData is defined before processing it
+    if (archiveData) {
       // Extract the years from groupData and remove duplicates
-      const uniqueYears = Array.from(new Set(groupData.map((entry) => entry.date.substring(0, 4))));
-    
+      const groupYears = Array.from(new Set(archiveData.groupData
+        .filter(entry => entry.date) // Filter out entries without a date property
+        .map((entry) => entry.date.substring(0, 4))
+      ));
+
       // Sort the years in descending order
-      uniqueYears.sort((a, b) => b - a);
-    
+      groupYears.sort((a, b) => b - a);
+
       // Update the yearsList state
-      setYearsList(uniqueYears);
+      setYearsList(groupYears);
     }
-  }, [groupData]);
+  }, [archiveData]);
 
   return (
     <div className="archive-page">
@@ -36,21 +42,35 @@ const ArchivePage = ({ groupData }) => {
         />
         <button onClick={() => console.log('Search functionality to be implemented')}>Search</button>
       </div>
+
       <section className="archive-section">
         <h2>Group Data</h2>
         <div className="archive-grid">
-          {groupData ? (
-            yearsList.map((year, index) => (
-              <div key={index} className="archive-item">
-                {year}
-              </div>
-            ))
-          ) : (
-            <p>Loading...</p>
-          )}
+          {yearsList.map((year, index) => (
+            <div
+              key={index}
+              className={`archive-item ${year === selectedYear ? 'selected-year' : ''}`}
+              onClick={() => handleYearClick(year)}
+            >
+              <strong>{`${year}-${parseInt(year) + 1}`}</strong>
+              {year === selectedYear && (
+                <ul>
+                  {archiveData.groupData
+                    .filter(entry => entry.date && entry.date.startsWith(year)) // Filter by date
+                    .map((entry, entryIndex) => (
+                      <li key={entryIndex}>{/* Render entry details here */}</li>
+                    ))}
+                </ul>
+              )}
+            </div>
+          ))}
         </div>
       </section>
-      {/* You can include a similar section for Finance Data */}
+
+      <section className="archive-section">
+        <h2>Finance Archive</h2>
+        {/* Add similar code for displaying Finance Archive */}
+      </section>
     </div>
   );
 };
