@@ -1,19 +1,29 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ArchivePage.css'; // Make sure the CSS file is in the same directory
 
-const ArchivePage = () => {
+const ArchivePage = ({ groupData }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Placeholder data for the groups
-  const archiveData = {
-    groupData: ['2018-2019', '2019-2020', '2020-2021', '2021-2022', '2022-2023'],
-    financeData: ['2018-2019', '2019-2020', '2020-2021', '2021-2022', '2022-2023'],
-  };
+  // State to hold the list of years based on groupData
+  const [yearsList, setYearsList] = useState([]);
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
   };
+
+  useEffect(() => {
+    // Check if groupData is defined before processing it
+    if (groupData) {
+      // Extract the years from groupData and remove duplicates
+      const uniqueYears = Array.from(new Set(groupData.map((entry) => entry.date.substring(0, 4))));
+    
+      // Sort the years in descending order
+      uniqueYears.sort((a, b) => b - a);
+    
+      // Update the yearsList state
+      setYearsList(uniqueYears);
+    }
+  }, [groupData]);
 
   return (
     <div className="archive-page">
@@ -29,23 +39,18 @@ const ArchivePage = () => {
       <section className="archive-section">
         <h2>Group Data</h2>
         <div className="archive-grid">
-          {archiveData.groupData.map((year, index) => (
-            <div key={index} className="archive-item">
-              {year}
-            </div>
-          ))}
+          {groupData ? (
+            yearsList.map((year, index) => (
+              <div key={index} className="archive-item">
+                {year}
+              </div>
+            ))
+          ) : (
+            <p>Loading...</p>
+          )}
         </div>
       </section>
-      <section className="archive-section">
-        <h2>Finance Data</h2>
-        <div className="archive-grid">
-          {archiveData.financeData.map((year, index) => (
-            <div key={index} className="archive-item">
-              {year}
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* You can include a similar section for Finance Data */}
     </div>
   );
 };

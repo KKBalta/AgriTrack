@@ -1,8 +1,11 @@
+/* GroupsPage.css */
+
+/* Header row background color */
 .table-headers {
   background-color: gray;
-  /* Other styling as needed */
 }
 
+/* Container styles */
 .groups-page-container {
   display: flex;
   flex-direction: column;
@@ -10,6 +13,7 @@
   justify-content: center;
 }
 
+/* Button styles */
 .create-button, .delete-button {
   margin-top: 10px;
   padding: 5px 10px;
@@ -20,16 +24,19 @@
   cursor: pointer;
 }
 
+/* Disabled button styles */
 .create-button:disabled, .delete-button:disabled {
   background-color: #cccccc;
 }
 
+/* Button group styles */
 .button-group {
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
 }
 
+/* Table footer styles */
 .table-footer {
   display: flex;
   justify-content: space-between;
@@ -37,32 +44,36 @@
   padding-top: 10px;
 }
 
+/* Pagination button styles */
 .pagination button {
   margin-right: 5px;
 }
 
-
+/* Container for the form and table */
 .form-and-table-container {
   width: 100%;
   max-width: 800px; /* or any appropriate width */
   margin: auto;
 }
 
-/* GroupsPage.css */
+/* Main container styles */
 .groups-page {
   padding: 20px;
 }
 
+/* Header styles */
 .groups-page h1 {
   margin-bottom: 20px;
 }
 
+/* Table styles */
 .groups-table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
 
+/* Table header and cell styles */
 .groups-table th,
 .groups-table td {
   border: 1px solid #ddd;
@@ -70,14 +81,24 @@
   text-align: left;
 }
 
+/* Table header background color */
 .groups-table th {
   background-color: #f2f2f2;
 }
 
+/* Alternate row background color */
 .groups-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
 
+/* Row highlighting styles based on selectedIds */
+.groups-table tr.selected-row {
+  background-color: #007bff; /* Change to your desired highlight color */
+  color: white; /* Change text color for better contrast */
+  font-weight: bold; /* Optionally, make the text bold for selected rows */
+}
+
+/* Pagination container styles */
 .pagination {
   display: flex;
   justify-content: center;
@@ -85,6 +106,7 @@
   padding: 0;
 }
 
+/* Pagination button styles */
 .pagination button {
   border: none;
   background-color: #ddd;
@@ -93,8 +115,7 @@
   cursor: pointer;
 }
 
+/* Pagination button hover styles */
 .pagination button:hover {
   background-color: #ccc;
 }
-
-/* Additional styles for active button state, etc. */

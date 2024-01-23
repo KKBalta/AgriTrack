@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './GroupsPage.css';
 
-export default function GroupsPage() {
+export default function GroupsPage({ updateArchiveData }) {
   const [formData, setFormData] = useState({
     id: '',
     date: '',
@@ -10,20 +10,18 @@ export default function GroupsPage() {
   });
   const [groupData, setGroupData] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [selectedId, setSelectedId] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const entriesPerPage = 20;
+  const entriesPerPage = 5;
 
-  // Calculate the current entries to display
+  
   const indexOfLastEntry = currentPage * entriesPerPage;
   const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
   const currentEntries = groupData.slice(indexOfFirstEntry, indexOfLastEntry);
 
-  // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  // Calculate page numbers
   const pageNumbers = [];
   for (let i = 1; i <= Math.ceil(groupData.length / entriesPerPage); i++) {
     pageNumbers.push(i);
@@ -38,7 +36,7 @@ export default function GroupsPage() {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    setFormData(prevFormData => ({
+    setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
     }));
@@ -57,10 +55,17 @@ export default function GroupsPage() {
     localStorage.setItem('groupData', JSON.stringify(updatedGroupData));
     setShowCreateForm(false);
     setFormData({ id: '', date: '', weight: '', rate: '' });
+
+    const year = newEntry.date.substring(0, 4);
+    updateArchiveData(year, 'groupData');
   };
 
   const handleRowClick = (identifier) => {
-    setSelectedId(identifier);
+    if (selectedIds.includes(identifier)) {
+      setSelectedIds(selectedIds.filter((id) => id !== identifier));
+    } else {
+      setSelectedIds([...selectedIds, identifier]);
+    }
   };
 
   const handleCreateClick = () => {
@@ -68,18 +73,29 @@ export default function GroupsPage() {
   };
 
   const handleDelete = () => {
-    const updatedGroupData = groupData.filter((entry, index) => {
-      const identifier = entry.id || `empty-${index}`;
-      return identifier !== selectedId;
-    });
-    setGroupData(updatedGroupData);
-    localStorage.setItem('groupData', JSON.stringify(updatedGroupData));
-    setSelectedId(null);
+
+    if (selectedIds.length > 0) {
+
+      const confirmDelete = window.confirm("Are you sure you want to delete the selected rows?");
+      
+      if (confirmDelete) {
+        const updatedGroupData = groupData.filter((entry, index) => {
+          const identifier = entry.id || `empty-${index}`;
+          return !selectedIds.includes(identifier);
+        });
+        setGroupData(updatedGroupData);
+        localStorage.setItem('groupData', JSON.stringify(updatedGroupData));
+        setSelectedIds([]);
+      }
+    } else {
+      alert("Please select rows to delete.");
+    }
   };
+
   return (
     <div className="groups-page">
       <h1>Groups</h1>
-  
+
       {showCreateForm && (
         <form onSubmit={handleSubmit}>
           <div className="input-group">
@@ -118,10 +134,10 @@ export default function GroupsPage() {
               onChange={handleInputChange}
             />
           </div>
-          <button type="submit">Submit</button>
+          <button type="submit">➕ Create</button>
         </form>
       )}
-  
+
       <table className="groups-table">
         <thead>
           <tr className="table-headers">
@@ -135,7 +151,11 @@ export default function GroupsPage() {
           {currentEntries.map((entry, index) => {
             const identifier = entry.id || `empty-${index}`;
             return (
-              <tr key={identifier} onClick={() => handleRowClick(identifier)} className={selectedId === identifier ? 'selected-row' : ''}>
+              <tr
+                key={identifier}
+                onClick={() => handleRowClick(identifier)}
+                className={selectedIds.includes(identifier) ? 'selected-row' : ''}
+              >
                 <td>{entry.id || 'N/A'}</td>
                 <td>{entry.date || 'N/A'}</td>
                 <td>{entry.weight || 'N/A'}</td>
@@ -145,22 +165,26 @@ export default function GroupsPage() {
           })}
         </tbody>
       </table>
-  
+
       <div className="table-footer">
         <div className="button-group">
           {!showCreateForm && (
             <button onClick={handleCreateClick} className="create-button">
-              Create Entry
+              ➕ Create
             </button>
           )}
-  
-          <button onClick={handleDelete} disabled={!selectedId} className="delete-button">
-            Delete Selected
+
+          <button
+            onClick={handleDelete}
+            disabled={selectedIds.length === 0}
+            className="delete-button"
+          >
+            🗑️ Delete
           </button>
         </div>
-  
+
         <div className="pagination">
-          {pageNumbers.map(number => (
+          {pageNumbers.map((number) => (
             <button key={number} onClick={() => paginate(number)}>
               {number}
             </button>
@@ -169,5 +193,4 @@ export default function GroupsPage() {
       </div>
     </div>
   );
-  
-        }  
+}
