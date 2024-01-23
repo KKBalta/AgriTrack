@@ -17,7 +17,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "mocha ./test/*test.js",
+    "test": "mocha --extension mjs --node-option experimental-specifier-resolution=node ./test/*test.mjs",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "chai": "^5.0.0",
+    "chai-http": "^4.4.0",
     "mocha": "^10.2.0"
   }
 }

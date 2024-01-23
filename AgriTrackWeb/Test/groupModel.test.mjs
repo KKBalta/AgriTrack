@@ -1,19 +1,16 @@
-const mongoose = require('mongoose');
-const chai = require('chai');
+import mongoose from 'mongoose';
+import * as chai from 'chai'; // Change this line
 const expect = chai.expect;
 
-const Group = require('../path/to/Group'); // Update with the path to your Group model
+import Group from '/Users/kaanbalta/Documents/ITU_doc/fall/ise_304/AgriTrack/AgriTrackWeb/models/group.js'; // Ensure this path is correct
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost/testdb', {
+mongoose.connect('mongodb://localhost:27017/AgriTrackData', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false
 });
 
 describe('Group Model Test', () => {
-  
   // Empty the database before each test
   beforeEach((done) => {
     mongoose.connection.collections.groups.drop(() => {
@@ -46,7 +43,6 @@ describe('Group Model Test', () => {
   });
 
   // ... more tests ...
-
 });
 
 // Close the Mongoose connection after all tests are done
