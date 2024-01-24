@@ -55,18 +55,6 @@ export default function FinancePage({ updateArchiveData }) {
     }));
   };
 
-  const handleEditClick = () => {
-    if (selectedIds.length === 1) {
-      const entryToEdit = financeData.find(entry => entry.id === selectedIds[0]);
-      if (entryToEdit) {
-        setFormData(entryToEdit);
-        setShowCreateForm(true);
-      }
-    } else {
-      alert("Please select exactly one item to edit.");
-    }
-  };
-
   const handleSubmit = (event) => {
     event.preventDefault();
     const newEntry = {
@@ -80,6 +68,10 @@ export default function FinancePage({ updateArchiveData }) {
       foderDay: formData.foderDay,
       foderDailyPrice: formData.foderDailyPrice,
     };
+
+    // Calculate Total and Profit here
+    newEntry.total = newEntry.kg * newEntry.price;
+    newEntry.profit = newEntry.total - newEntry.animalPurchasePrice - (newEntry.foderDay * newEntry.foderDailyPrice);
 
     let updatedFinanceData;
     if (formData.id) {
@@ -118,11 +110,9 @@ export default function FinancePage({ updateArchiveData }) {
   };
 
   const handleCreateClick = () => {
-    if (showCreateForm) {
-      // If the form is already visible, cancel it
-      setShowCreateForm(false);
-    } else {
-      // If the form is not visible, show it
+    setShowCreateForm(!showCreateForm); // Toggle the value of showCreateForm
+    // Clear the form data when cancel is clicked
+    if (!showCreateForm) {
       setFormData({
         id: null,
         date: '',
@@ -134,7 +124,32 @@ export default function FinancePage({ updateArchiveData }) {
         foderDay: '',
         foderDailyPrice: '',
       });
-      setShowCreateForm(true);
+    }
+  };
+  
+
+  const handleModifyClick = () => {
+    if (selectedIds.length === 1) {
+      const selectedEntry = financeData.find((entry) => entry.id === selectedIds[0]);
+      if (selectedEntry) {
+        // Populate the form fields with the selected entry's data for modification
+        setFormData({
+          id: selectedEntry.id,
+          date: selectedEntry.date,
+          amount: selectedEntry.amount,
+          kg: selectedEntry.kg,
+          price: selectedEntry.price,
+          kdv: selectedEntry.kdv,
+          animalPurchasePrice: selectedEntry.animalPurchasePrice,
+          foderDay: selectedEntry.foderDay,
+          foderDailyPrice: selectedEntry.foderDailyPrice,
+        });
+
+        // Show the create form for modification
+        setShowCreateForm(true);
+      }
+    } else {
+      alert("Please select one row to modify.");
     }
   };
 
@@ -144,6 +159,7 @@ export default function FinancePage({ updateArchiveData }) {
   for (let i = 1; i <= Math.ceil(financeData.length / entriesPerPage); i++) {
     pageNumbers.push(i);
   }
+  
   return (
     <div className="finance-page">
       <h1>Finance</h1>
@@ -204,7 +220,7 @@ export default function FinancePage({ updateArchiveData }) {
         </thead>
         <tbody>
           {currentEntries.map((entry, index) => {
-            const identifier = entry.id || `empty-${index}`; // Assuming each entry has a unique 'id'
+            const identifier = entry.id || `empty-${index}`;
             return (
               <tr
                 key={identifier}
@@ -232,7 +248,7 @@ export default function FinancePage({ updateArchiveData }) {
           <button onClick={handleCreateClick} className="finance-create-button">
             {showCreateForm ? 'Cancel' : '➕ Create'}
           </button>
-          <button onClick={handleEditClick} className="finance-modify-button">
+          <button onClick={handleModifyClick} className="finance-modify-button">
             ✏️ Modify
           </button>
           <button
