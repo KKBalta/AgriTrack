@@ -8,10 +8,9 @@ export default function GroupsPage({ updateArchiveData }) {
     kg: '',
     price: '',
     kdv: '',
-    total: '',
+    animalPurchasePrice: '', // Added input field for Animal Purchase Price
     foderDay: '',
     foderDailyPrice: '',
-    profit: '',
   });
   const [groupData, setGroupData] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -54,11 +53,14 @@ export default function GroupsPage({ updateArchiveData }) {
       kg: formData.kg,
       price: formData.price,
       kdv: formData.kdv,
-      total: formData.total,
+      animalPurchasePrice: formData.animalPurchasePrice,
       foderDay: formData.foderDay,
       foderDailyPrice: formData.foderDailyPrice,
-      profit: formData.profit,
     };
+    // Calculate Total and Profit here
+    newEntry.total = (newEntry.kg * newEntry.price) + ((newEntry.kg * newEntry.price) * (newEntry.kdv / 100));
+    newEntry.profit = newEntry.total - newEntry.animalPurchasePrice - (newEntry.foderDay * newEntry.foderDailyPrice);
+
     const updatedGroupData = [...groupData, newEntry];
     setGroupData(updatedGroupData);
     localStorage.setItem('groupData', JSON.stringify(updatedGroupData));
@@ -69,10 +71,9 @@ export default function GroupsPage({ updateArchiveData }) {
       kg: '',
       price: '',
       kdv: '',
-      total: '',
+      animalPurchasePrice: '', // Reset the Animal Purchase Price input
       foderDay: '',
       foderDailyPrice: '',
-      profit: '',
     });
 
     const year = newEntry.date.substring(0, 4);
@@ -159,11 +160,11 @@ export default function GroupsPage({ updateArchiveData }) {
             />
           </div>
           <div className="input-group">
-            <label>Total</label>
+            <label>Animal Purchase Price</label> {/* Added input field for Animal Purchase Price */}
             <input
               type="text"
-              name="total"
-              value={formData.total}
+              name="animalPurchasePrice"
+              value={formData.animalPurchasePrice}
               onChange={handleInputChange}
             />
           </div>
@@ -185,15 +186,6 @@ export default function GroupsPage({ updateArchiveData }) {
               onChange={handleInputChange}
             />
           </div>
-          <div className="input-group">
-            <label>Profit</label>
-            <input
-              type="text"
-              name="profit"
-              value={formData.profit}
-              onChange={handleInputChange}
-            />
-          </div>
           <button type="submit">➕ Create</button>
         </form>
       )}
@@ -202,11 +194,12 @@ export default function GroupsPage({ updateArchiveData }) {
         <thead>
           <tr className="table-headers">
             <th>Date</th>
+            <th>Animal Purchase Price</th>
             <th>Amount</th>
             <th>KG</th>
             <th>Price</th>
-            <th>KDV</th>
             <th>Total</th>
+            <th>KDV</th>
             <th>Foder Day</th>
             <th>Foder Daily Price</th>
             <th>Profit</th>
@@ -222,11 +215,12 @@ export default function GroupsPage({ updateArchiveData }) {
                 className={selectedIds.includes(identifier) ? 'selected-row' : ''}
               >
                 <td>{entry.date || 'N/A'}</td>
+                <td>{entry.animalPurchasePrice || 'N/A'}</td>
                 <td>{entry.amount || 'N/A'}</td>
                 <td>{entry.kg || 'N/A'}</td>
                 <td>{entry.price || 'N/A'}</td>
-                <td>{entry.kdv || 'N/A'}</td>
                 <td>{entry.total || 'N/A'}</td>
+                <td>{entry.kdv || 'N/A'}</td>
                 <td>{entry.foderDay || 'N/A'}</td>
                 <td>{entry.foderDailyPrice || 'N/A'}</td>
                 <td>{entry.profit || 'N/A'}</td>
@@ -261,6 +255,7 @@ export default function GroupsPage({ updateArchiveData }) {
           ))}
         </div>
       </div>
+
     </div>
   );
 }

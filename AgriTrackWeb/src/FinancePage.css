@@ -14,7 +14,8 @@
 }
 
 /* Button styles */
-.finance-create-button, .finance-delete-button {
+.finance-create-button,
+.finance-delete-button {
   margin-top: 10px;
   padding: 5px 10px;
   background-color: #007bff;
@@ -25,7 +26,8 @@
 }
 
 /* Disabled button styles */
-.finance-create-button:disabled, .finance-delete-button:disabled {
+.finance-create-button:disabled,
+.finance-delete-button:disabled {
   background-color: #cccccc;
 }
 
