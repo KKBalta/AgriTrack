@@ -1,7 +1,9 @@
 import React from 'react';
-import './HomePage.css'; // Make sure to create and import the CSS file
+import './HomePage.css';
 
-function HomePage() {
+function HomePage({ animalCount }) {
+  // The animalCount is now received as a prop from GroupHomePageParent
+
   return (
     <div className="homepage">
       <div className="dashboard-content">
@@ -11,7 +13,8 @@ function HomePage() {
         </div>
         <div className="card animals">
           <p>Animals</p>
-          <div className="number-placeholder">576</div>
+          {/* Use the animalCount prop directly */}
+          <div className="number-placeholder">{animalCount}</div>
         </div>
         <div className="card map">
           <p>Farm Map</p>
