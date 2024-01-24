@@ -1,6 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const Group = require('/Users/kaanbalta/Documents/ITU_doc/fall/ise_304/AgriTrack/AgriTrackWeb/models/group'); // adjust the path as needed
+const Group = require('/Users/kaanbalta/Documents/ITU_doc/fall/ise_304/AgriTrack/AgriTrackWeb/models/group'); // Adjust the path as needed
+
+// Middleware to get group by ID
+async function getGroup(req, res, next) {
+    let group;
+    try {
+        group = await Group.findById(req.params.groupId);
+        if (group == null) {
+            return res.status(404).json({ message: 'Cannot find group' });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+    res.group = group;
+    next();
+}
 
 // Get all groups
 router.get('/groups', async (req, res) => {
@@ -13,7 +28,7 @@ router.get('/groups', async (req, res) => {
 });
 
 // Get one group by id
-router.get('/groups/:id', getGroup, (req, res) => {
+router.get('/groups/:groupId', getGroup, (req, res) => {
     res.json(res.group);
 });
 
@@ -29,10 +44,11 @@ router.post('/groups', async (req, res) => {
 });
 
 // Update one group
-router.patch('/groups/:id', getGroup, async (req, res) => {
+router.patch('/groups/:groupId', getGroup, async (req, res) => {
     if (req.body.name != null) {
         res.group.name = req.body.name;
     }
+    // Include additional fields as necessary
     try {
         const updatedGroup = await res.group.save();
         res.json(updatedGroup);
@@ -42,7 +58,7 @@ router.patch('/groups/:id', getGroup, async (req, res) => {
 });
 
 // Delete one group
-router.delete('/groups/:id', getGroup, async (req, res) => {
+router.delete('/groups/:groupId', getGroup, async (req, res) => {
     try {
         await res.group.remove();
         res.json({ message: 'Deleted Group' });
@@ -51,19 +67,52 @@ router.delete('/groups/:id', getGroup, async (req, res) => {
     }
 });
 
-// Middleware to get group by ID
-async function getGroup(req, res, next) {
-    let group;
+// Add an animal to a specific group
+router.post('/groups/:groupId/animals', getGroup, async (req, res) => {
+    const animal = req.body; // Assuming the animal details are in the request body
+    res.group.animals.push(animal); // Add the animal to the group's animals array
     try {
-        group = await Group.findById(req.params.id);
-        if (group == null) {
-            return res.status(404).json({ message: 'Cannot find group' });
-        }
+        const updatedGroup = await res.group.save();
+        res.status(201).json(updatedGroup);
     } catch (error) {
-        return res.status(500).json({ message: error.message });
+        res.status(400).json({ message: error.message });
     }
-    res.group = group;
-    next();
-}
+});
+
+// Update a specific animal in a group
+router.patch('/groups/:groupId/animals/:animalId', getGroup, async (req, res) => {
+    const { animalId } = req.params;
+    const animalUpdates = req.body; // Assuming the updates are in the request body
+    const animal = res.group.animals.id(animalId); // Find the animal by ID
+    if (animal) {
+        Object.assign(animal, animalUpdates); // Update the animal details
+        try {
+            const updatedGroup = await res.group.save();
+            res.json(updatedGroup);
+        } catch (error) {
+            res.status(400).json({ message: error.message });
+        }
+    } else {
+        res.status(404).json({ message: 'Animal not found' });
+    }
+});
+
+// Add a weight entry to a specific animal in a group
+router.post('/groups/:groupId/animals/:animalId/weightEntries', getGroup, async (req, res) => {
+    const { animalId } = req.params;
+    const weightEntry = req.body; // Assuming the weight entry details are in the request body
+    const animal = res.group.animals.id(animalId); // Find the animal by ID
+    if (animal) {
+        animal.weightEntries.push(weightEntry); // Add the weight entry
+        try {
+            const updatedGroup = await res.group.save();
+            res.status(201).json(updatedGroup);
+        } catch (error) {
+            res.status(400).json({ message: error.message });
+        }
+    } else {
+        res.status(404).json({ message: 'Animal not found' });
+    }
+});
 
 module.exports = router;

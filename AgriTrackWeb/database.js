@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    await mongoose.connect('mongodb://localhost/yourDatabaseName', {
+    await mongoose.connect('mongodb://localhost/AgriTrackData', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
