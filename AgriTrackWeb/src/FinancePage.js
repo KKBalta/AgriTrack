@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './GroupsPage.css';
+import './FinancePage.css';
 
 export default function GroupsPage({ updateArchiveData }) {
   const [formData, setFormData] = useState({
@@ -45,6 +45,18 @@ export default function GroupsPage({ updateArchiveData }) {
     }));
   };
 
+  // This function is triggered when the modify button is clicked
+const handleEditClick = (itemId) => {
+  // Find the item to be edited
+  const itemToEdit = groupData.find((item) => item.id === itemId);
+  if (itemToEdit) {
+    // Set the form data to the item's data
+    setFormData(itemToEdit);
+    // Set the application to edit mode
+    setShowCreateForm(true);
+  }
+};
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const newEntry = {
@@ -58,7 +70,7 @@ export default function GroupsPage({ updateArchiveData }) {
       foderDailyPrice: formData.foderDailyPrice,
     };
     // Calculate Total and Profit here
-    newEntry.total = (newEntry.kg * newEntry.price) + ((newEntry.kg * newEntry.price) * (newEntry.kdv / 100));
+    newEntry.total = newEntry.kg * newEntry.price;
     newEntry.profit = newEntry.total - newEntry.animalPurchasePrice - (newEntry.foderDay * newEntry.foderDailyPrice);
 
     const updatedGroupData = [...groupData, newEntry];
@@ -94,7 +106,7 @@ export default function GroupsPage({ updateArchiveData }) {
 
   const handleDelete = () => {
     if (selectedIds.length > 0) {
-      const confirmDelete = window.confirm("Are you sure you want to delete the selected rows?");
+      const confirmDelete = window.confirm("Are you sure you want to delete the selected row(s)?");
       if (confirmDelete) {
         const updatedGroupData = groupData.filter((entry, index) => {
           const identifier = entry.date || `empty-${index}`;
@@ -109,6 +121,18 @@ export default function GroupsPage({ updateArchiveData }) {
     }
   };
 
+
+  const handleModifyClick = () => {
+    if (selectedIds.length === 1) {
+      const entryToEdit = groupData.find(entry => entry.id === selectedIds[0]);
+      if (entryToEdit) {
+        setFormData(entryToEdit);
+        setShowCreateForm(true);
+      }
+    } else {
+      alert("Please select a single entry to modify.");
+    }
+  };
   return (
     <div className="groups-page">
       <h1>Finance</h1>
@@ -190,21 +214,22 @@ export default function GroupsPage({ updateArchiveData }) {
         </form>
       )}
 
+
       <table className="groups-table">
-        <thead>
-          <tr className="table-headers">
-            <th>Date</th>
-            <th>Animal Purchase Price</th>
-            <th>Amount</th>
-            <th>KG</th>
-            <th>Price</th>
-            <th>Total</th>
-            <th>KDV</th>
-            <th>Foder Day</th>
-            <th>Foder Daily Price</th>
-            <th>Profit</th>
-          </tr>
-        </thead>
+      <thead>
+  <tr className="table-headers">
+    <th>Date</th>
+    <th>Animal Purchase Price</th>
+    <th>Amount</th>
+    <th>KG</th>
+    <th>Price</th>
+    <th>Total</th>
+    <th>KDV</th>
+    <th>Foder Day</th>
+    <th>Foder Daily Price</th>
+    <th>Profit</th> 
+  </tr>
+</thead>
         <tbody>
           {currentEntries.map((entry, index) => {
             const identifier = entry.date || `empty-${index}`;
@@ -219,7 +244,7 @@ export default function GroupsPage({ updateArchiveData }) {
                 <td>{entry.amount || 'N/A'}</td>
                 <td>{entry.kg || 'N/A'}</td>
                 <td>{entry.price || 'N/A'}</td>
-                <td>{entry.total || 'N/A'}</td>
+                <td>{entry.total || 'N/A'}</td> 
                 <td>{entry.kdv || 'N/A'}</td>
                 <td>{entry.foderDay || 'N/A'}</td>
                 <td>{entry.foderDailyPrice || 'N/A'}</td>
@@ -255,6 +280,7 @@ export default function GroupsPage({ updateArchiveData }) {
           ))}
         </div>
       </div>
+      
 
     </div>
   );
