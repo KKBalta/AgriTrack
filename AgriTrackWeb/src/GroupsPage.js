@@ -15,7 +15,7 @@ export default function GroupsPage({ updateArchiveData }) {
   const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
 
   const [currentPage, setCurrentPage] = useState(1);
-  const entriesPerPage = 5;
+  const entriesPerPage = 20;
 
   const indexOfLastEntry = currentPage * entriesPerPage;
   const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
@@ -101,6 +101,11 @@ export default function GroupsPage({ updateArchiveData }) {
       setSelectedIds([...selectedIds, identifier]);
     }
   };
+  
+  
+  
+  
+  
 
   const handleCreateClick = () => {
     if (showCreateForm) {
@@ -146,120 +151,107 @@ export default function GroupsPage({ updateArchiveData }) {
     }
   };
 
-// ...
+  return (
+    <div className="groups-page">
+      <h1>Groups</h1>
 
-return (
-  <div className="groups-page">
-    <h1>Groups</h1>
+      {showCreateForm || showModifyForm ? (
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label>ID (Animal Ear Tag)</label>
+            <input
+              type="text"
+              name="id"
+              value={formData.id}
+              onChange={handleInputChange}
+              readOnly={selectedRowIndex !== -1}
+            />
+          </div>
+          <div className="input-group">
+            <label>Date</label>
+            <input
+              type="date"
+              name="date"
+              value={formData.date}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="input-group">
+            <label>Weight</label>
+            <input
+              type="text"
+              name="weight"
+              value={formData.weight}
+              onChange={handleInputChange}
+            />
+          </div>
+          <button type="submit" className="save-changes-button">
+            {selectedRowIndex !== -1 ? 'Save Changes' : 'Save'}
+          </button>
+        </form>
+      ) : null}
 
-    {showCreateForm || showModifyForm ? (
-      <form onSubmit={handleSubmit}>
-        <div className="input-group">
-          <label>ID (Animal Ear Tag)</label>
-          <input
-            type="text"
-            name="id"
-            value={formData.id}
-            onChange={handleInputChange}
-            readOnly={selectedRowIndex !== -1}
-          />
-        </div>
-        <div className="input-group">
-          <label>Date</label>
-          <input
-            type="date"
-            name="date"
-            value={formData.date}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="input-group">
-          <label>Weight</label>
-          <input
-            type="text"
-            name="weight"
-            value={formData.weight}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className="input-group">
-          <label>Daily Gaining Weight Rate</label>
-          <input
-            type="text"
-            name="rate"
-            value={formData.rate}
-            onChange={handleInputChange}
-            readOnly={selectedRowIndex !== -1}
-          />
-        </div>
-        <button type="submit" className="save-changes-button">
-          {selectedRowIndex !== -1 ? 'Save Changes' : 'Save'}
-        </button>
-      </form>
-    ) : null}
-
-    <div className="form-and-table-container">
-      <table className="groups-table">
-        <thead>
-          <tr className="table-headers">
-            <th>ID</th>
-            <th>Date</th>
-            <th>Weight</th>
-            <th>Daily Gaining Weight Rate</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentEntries.map((entry, index) => (
-            <tr
-              key={index}
-              className={selectedIds.includes(entry.id || `empty-${index}`) ? 'selected-row' : ''}
-              onClick={() => handleRowClick(entry.id || `empty-${index}`)}
-            >
-              <td>{entry.id}</td>
-              <td>{entry.date}</td>
-              <td>{entry.weight}</td>
-              <td>{entry.rate}</td>
+      <div className="form-and-table-container">
+        <table className="groups-table">
+          <thead>
+            <tr className="table-headers">
+              <th>ID</th>
+              <th>Date</th>
+              <th>Weight</th>
+              <th>Daily Gaining Weight Rate</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {currentEntries.map((entry, index) => (
+              <tr
+                key={index}
+                className={selectedIds.includes(entry.id || `empty-${index}`) ? 'selected-row' : ''}
+                onClick={() => handleRowClick(entry.id || `empty-${index}`)}
+              >
+                <td>{entry.id}</td>
+                <td>{entry.date}</td>
+                <td>{entry.weight}</td>
+                <td>{entry.rate}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-    <div className="pagination">
-      {pageNumbers.map((number) => (
+      <div className="button-group">
+        {!showCreateForm && (
+          <button onClick={handleCreateClick} className="create-button">
+            ➕ Create
+          </button>
+        )}
+        {showCreateForm && (
+          <button onClick={handleCreateClick} className="cancel-button">
+            Cancel
+          </button>
+        )}
+        <button onClick={handleModifyClick} className="modify-button">
+          ✏️ Modify
+        </button>
         <button
-          key={number}
-          onClick={() => paginate(number)}
-          className={currentPage === number ? 'active' : ''}
+          onClick={handleDelete}
+          disabled={selectedIds.length === 0}
+          className="delete-button"
         >
-          {number}
+          🗑️ Delete
         </button>
-      ))}
-    </div>
+      </div>
 
-    <div className="button-group">
-      {!showCreateForm && (
-        <button onClick={handleCreateClick} className="create-button">
-          ➕ Create
-        </button>
-      )}
-      {showCreateForm && (
-        <button onClick={handleCreateClick} className="cancel-button">
-          Cancel
-        </button>
-      )}
-      <button onClick={handleModifyClick} className="modify-button">
-        ✏️ Modify
-      </button>
-      <button
-        onClick={handleDelete}
-        disabled={selectedIds.length === 0}
-        className="delete-button"
-      >
-        🗑️ Delete
-      </button>
+      <div className="pagination">
+        {pageNumbers.map((number) => (
+          <button
+            key={number}
+            onClick={() => paginate(number)}
+            className={currentPage === number ? 'active' : ''}
+          >
+            {number}
+          </button>
+        ))}
+      </div>
     </div>
-  </div>
-);
-
+  );
 }
