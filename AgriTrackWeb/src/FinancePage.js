@@ -1,39 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import './FinancePage.css';
 
-export default function GroupsPage({ updateArchiveData }) {
+export default function FinancePage({ updateArchiveData }) {
   const [formData, setFormData] = useState({
+    id: null,
     date: '',
     amount: '',
     kg: '',
     price: '',
     kdv: '',
-    animalPurchasePrice: '', // Added input field for Animal Purchase Price
+    animalPurchasePrice: '',
     foderDay: '',
     foderDailyPrice: '',
   });
-  const [groupData, setGroupData] = useState([]);
+  const [financeData, setFinanceData] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedIds, setSelectedIds] = useState([]);
-
   const [currentPage, setCurrentPage] = useState(1);
   const entriesPerPage = 5;
 
   const indexOfLastEntry = currentPage * entriesPerPage;
   const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
-  const currentEntries = groupData.slice(indexOfFirstEntry, indexOfLastEntry);
+  const currentEntries = financeData.slice(indexOfFirstEntry, indexOfLastEntry);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(groupData.length / entriesPerPage); i++) {
-    pageNumbers.push(i);
-  }
-
+  const handleDelete = () => {
+    if (selectedIds.length > 0) {
+      const confirmDelete = window.confirm("Are you sure you want to delete the selected row(s)?");
+      if (confirmDelete) {
+        const updatedFinanceData = financeData.filter((entry) => {
+          const identifier = entry.id;
+          return !selectedIds.includes(identifier);
+        });
+        setFinanceData(updatedFinanceData);
+        localStorage.setItem('financeData', JSON.stringify(updatedFinanceData));
+        setSelectedIds([]);
+      }
+    } else {
+      alert("Please select rows to delete.");
+    }
+  };
+  
   useEffect(() => {
-    const storedData = localStorage.getItem('groupData');
+    const storedData = localStorage.getItem('financeData');
     if (storedData) {
-      setGroupData(JSON.parse(storedData));
+      setFinanceData(JSON.parse(storedData));
     }
   }, []);
 
@@ -45,21 +55,22 @@ export default function GroupsPage({ updateArchiveData }) {
     }));
   };
 
-  // This function is triggered when the modify button is clicked
-const handleEditClick = (itemId) => {
-  // Find the item to be edited
-  const itemToEdit = groupData.find((item) => item.id === itemId);
-  if (itemToEdit) {
-    // Set the form data to the item's data
-    setFormData(itemToEdit);
-    // Set the application to edit mode
-    setShowCreateForm(true);
-  }
-};
+  const handleEditClick = () => {
+    if (selectedIds.length === 1) {
+      const entryToEdit = financeData.find(entry => entry.id === selectedIds[0]);
+      if (entryToEdit) {
+        setFormData(entryToEdit);
+        setShowCreateForm(true);
+      }
+    } else {
+      alert("Please select exactly one item to edit.");
+    }
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const newEntry = {
+      id: formData.id || Date.now(),
       date: formData.date,
       amount: formData.amount,
       kg: formData.kg,
@@ -69,27 +80,33 @@ const handleEditClick = (itemId) => {
       foderDay: formData.foderDay,
       foderDailyPrice: formData.foderDailyPrice,
     };
-    // Calculate Total and Profit here
-    newEntry.total = newEntry.kg * newEntry.price;
-    newEntry.profit = newEntry.total - newEntry.animalPurchasePrice - (newEntry.foderDay * newEntry.foderDailyPrice);
 
-    const updatedGroupData = [...groupData, newEntry];
-    setGroupData(updatedGroupData);
-    localStorage.setItem('groupData', JSON.stringify(updatedGroupData));
+    let updatedFinanceData;
+    if (formData.id) {
+      updatedFinanceData = financeData.map((item) => 
+        item.id === formData.id ? newEntry : item
+      );
+    } else {
+      updatedFinanceData = [...financeData, newEntry];
+    }
+
+    setFinanceData(updatedFinanceData);
+    localStorage.setItem('financeData', JSON.stringify(updatedFinanceData));
     setShowCreateForm(false);
     setFormData({
+      id: null,
       date: '',
       amount: '',
       kg: '',
       price: '',
       kdv: '',
-      animalPurchasePrice: '', // Reset the Animal Purchase Price input
+      animalPurchasePrice: '',
       foderDay: '',
       foderDailyPrice: '',
     });
 
     const year = newEntry.date.substring(0, 4);
-    updateArchiveData(year, 'groupData');
+    updateArchiveData(year, 'financeData');
   };
 
   const handleRowClick = (identifier) => {
@@ -101,138 +118,93 @@ const handleEditClick = (itemId) => {
   };
 
   const handleCreateClick = () => {
-    setShowCreateForm(true);
-  };
-
-  const handleDelete = () => {
-    if (selectedIds.length > 0) {
-      const confirmDelete = window.confirm("Are you sure you want to delete the selected row(s)?");
-      if (confirmDelete) {
-        const updatedGroupData = groupData.filter((entry, index) => {
-          const identifier = entry.date || `empty-${index}`;
-          return !selectedIds.includes(identifier);
-        });
-        setGroupData(updatedGroupData);
-        localStorage.setItem('groupData', JSON.stringify(updatedGroupData));
-        setSelectedIds([]);
-      }
+    if (showCreateForm) {
+      // If the form is already visible, cancel it
+      setShowCreateForm(false);
     } else {
-      alert("Please select rows to delete.");
+      // If the form is not visible, show it
+      setFormData({
+        id: null,
+        date: '',
+        amount: '',
+        kg: '',
+        price: '',
+        kdv: '',
+        animalPurchasePrice: '',
+        foderDay: '',
+        foderDailyPrice: '',
+      });
+      setShowCreateForm(true);
     }
   };
 
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleModifyClick = () => {
-    if (selectedIds.length === 1) {
-      const entryToEdit = groupData.find(entry => entry.id === selectedIds[0]);
-      if (entryToEdit) {
-        setFormData(entryToEdit);
-        setShowCreateForm(true);
-      }
-    } else {
-      alert("Please select a single entry to modify.");
-    }
-  };
+  const pageNumbers = [];
+  for (let i = 1; i <= Math.ceil(financeData.length / entriesPerPage); i++) {
+    pageNumbers.push(i);
+  }
   return (
-    <div className="groups-page">
+    <div className="finance-page">
       <h1>Finance</h1>
       {showCreateForm && (
         <form onSubmit={handleSubmit}>
           <div className="input-group">
             <label>Date</label>
-            <input
-              type="date"
-              name="date"
-              value={formData.date}
-              onChange={handleInputChange}
-            />
+            <input type="date" name="date" value={formData.date} onChange={handleInputChange} />
           </div>
           <div className="input-group">
             <label>Amount</label>
-            <input
-              type="text"
-              name="amount"
-              value={formData.amount}
-              onChange={handleInputChange}
-            />
+            <input type="text" name="amount" value={formData.amount} onChange={handleInputChange} />
           </div>
           <div className="input-group">
             <label>KG</label>
-            <input
-              type="text"
-              name="kg"
-              value={formData.kg}
-              onChange={handleInputChange}
-            />
+            <input type="text" name="kg" value={formData.kg} onChange={handleInputChange} />
           </div>
           <div className="input-group">
             <label>Price</label>
-            <input
-              type="text"
-              name="price"
-              value={formData.price}
-              onChange={handleInputChange}
-            />
+            <input type="text" name="price" value={formData.price} onChange={handleInputChange} />
           </div>
           <div className="input-group">
             <label>KDV</label>
-            <input
-              type="text"
-              name="kdv"
-              value={formData.kdv}
-              onChange={handleInputChange}
-            />
+            <input type="text" name="kdv" value={formData.kdv} onChange={handleInputChange} />
           </div>
           <div className="input-group">
-            <label>Animal Purchase Price</label> {/* Added input field for Animal Purchase Price */}
-            <input
-              type="text"
-              name="animalPurchasePrice"
-              value={formData.animalPurchasePrice}
-              onChange={handleInputChange}
-            />
+            <label>Animal Purchase Price</label>
+            <input type="text" name="animalPurchasePrice" value={formData.animalPurchasePrice} onChange={handleInputChange} />
           </div>
           <div className="input-group">
             <label>Foder Day</label>
-            <input
-              type="text"
-              name="foderDay"
-              value={formData.foderDay}
-              onChange={handleInputChange}
-            />
+            <input type="text" name="foderDay" value={formData.foderDay} onChange={handleInputChange} />
           </div>
           <div className="input-group">
             <label>Foder Daily Price</label>
-            <input
-              type="text"
-              name="foderDailyPrice"
-              value={formData.foderDailyPrice}
-              onChange={handleInputChange}
-            />
+            <input type="text" name="foderDailyPrice" value={formData.foderDailyPrice} onChange={handleInputChange} />
           </div>
-          <button type="submit">➕ Create</button>
+          <button type="submit" className="finance-create-button">
+            {formData.id ? 'Save Changes' : 'Create'}
+          </button>
         </form>
       )}
-
-
-      <table className="groups-table">
-      <thead>
-  <tr className="table-headers">
-    <th>Date</th>
-    <th>Animal Purchase Price</th>
-    <th>Amount</th>
-    <th>KG</th>
-    <th>Price</th>
-    <th>Total</th>
-    <th>KDV</th>
-    <th>Foder Day</th>
-    <th>Foder Daily Price</th>
-    <th>Profit</th> 
-  </tr>
-</thead>
+  
+      <table className="finance-table">
+        <thead>
+          <tr className="finance-table-headers">
+            <th>Date</th>
+            <th>Animal Purchase Price</th>
+            <th>Amount</th>
+            <th>KG</th>
+            <th>Price</th>
+            <th>Total</th>
+            <th>KDV</th>
+            <th>Foder Day</th>
+            <th>Foder Daily Price</th>
+            <th>Profit</th>
+          </tr>
+        </thead>
         <tbody>
           {currentEntries.map((entry, index) => {
-            const identifier = entry.date || `empty-${index}`;
+            const identifier = entry.id || `empty-${index}`; // Assuming each entry has a unique 'id'
             return (
               <tr
                 key={identifier}
@@ -244,7 +216,7 @@ const handleEditClick = (itemId) => {
                 <td>{entry.amount || 'N/A'}</td>
                 <td>{entry.kg || 'N/A'}</td>
                 <td>{entry.price || 'N/A'}</td>
-                <td>{entry.total || 'N/A'}</td> 
+                <td>{entry.total || 'N/A'}</td>
                 <td>{entry.kdv || 'N/A'}</td>
                 <td>{entry.foderDay || 'N/A'}</td>
                 <td>{entry.foderDailyPrice || 'N/A'}</td>
@@ -254,25 +226,24 @@ const handleEditClick = (itemId) => {
           })}
         </tbody>
       </table>
-
-      <div className="table-footer">
-        <div className="button-group">
-          {!showCreateForm && (
-            <button onClick={handleCreateClick} className="create-button">
-              ➕ Create
-            </button>
-          )}
-
+  
+      <div className="finance-table-footer">
+        <div className="finance-button-group">
+          <button onClick={handleCreateClick} className="finance-create-button">
+            {showCreateForm ? 'Cancel' : '➕ Create'}
+          </button>
+          <button onClick={handleEditClick} className="finance-modify-button">
+            ✏️ Modify
+          </button>
           <button
             onClick={handleDelete}
             disabled={selectedIds.length === 0}
-            className="delete-button"
-          >
+            className="finance-delete-button">
             🗑️ Delete
           </button>
         </div>
-
-        <div className="pagination">
+  
+        <div className="finance-pagination">
           {pageNumbers.map((number) => (
             <button key={number} onClick={() => paginate(number)}>
               {number}
@@ -280,8 +251,6 @@ const handleEditClick = (itemId) => {
           ))}
         </div>
       </div>
-      
-
     </div>
   );
 }

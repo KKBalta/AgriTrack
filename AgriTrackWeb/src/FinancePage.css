@@ -22,7 +22,6 @@
   margin-left: 10px; /* Adjust if more spacing is needed between label and input */
 }
 
-
 /* Header row background color */
 .finance-table-headers {
   background-color: gray;
@@ -38,9 +37,10 @@
 
 /* Button styles */
 .finance-create-button,
-.finance-delete-button {
+.finance-delete-button,
+.finance-modify-button {
   margin-top: 10px;
-  padding: 5px 10px;
+  padding: 20px 40px; /* Doubled padding for bigger buttons */
   background-color: #007bff;
   color: white;
   border: none;
@@ -50,7 +50,8 @@
 
 /* Disabled button styles */
 .finance-create-button:disabled,
-.finance-delete-button:disabled {
+.finance-delete-button:disabled,
+.finance-modify-button:disabled {
   background-color: #cccccc;
 }
 
@@ -59,6 +60,11 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 10px;
+}
+
+/* Added space between buttons */
+.finance-button-group button {
+  margin-left: 10px; /* Adjust the space between buttons */
 }
 
 /* Table footer styles */
