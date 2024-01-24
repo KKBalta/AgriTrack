@@ -1,5 +1,28 @@
 /* FinancePage.css */
 
+/* Align the input slots */
+.input-group {
+  display: flex;
+  align-items: center; /* Center vertically within the input group */
+  margin-bottom: 10px; /* Adjust spacing between input groups (you can change this value) */
+}
+
+/* Label styles */
+.input-group label {
+  flex-shrink: 0; /* Prevents the label from shrinking */
+  width: 150px; /* Adjust the width of the labels to your preference */
+  margin-right: 10px; /* Adjust spacing between label and input (you can change this value) */
+  text-align: right; /* Aligns the text to the right */
+  padding-right: 10px; /* Adds padding to the right of the label for alignment */
+}
+
+/* Input styles */
+.input-group input {
+  flex-grow: 1; /* Allows the input to grow and fill the available space */
+  margin-left: 10px; /* Adjust if more spacing is needed between label and input */
+}
+
+
 /* Header row background color */
 .finance-table-headers {
   background-color: gray;

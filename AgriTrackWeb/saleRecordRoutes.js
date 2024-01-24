@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const SaleRecord = require('/Users/kaanbalta/Documents/ITU_doc/fall/ise_304/AgriTrack/AgriTrackWeb/models/saleRecord'); // Adjust the path as needed
+const SaleRecord = require('./AgriTrack/AgriTrackWeb/models/SalesRecord.js'); // Adjust the path as needed
 
 // Middleware to get sale record by ID
 async function getSaleRecord(req, res, next) {

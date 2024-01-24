@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Group = require('/Users/kaanbalta/Documents/ITU_doc/fall/ise_304/AgriTrack/AgriTrackWeb/models/group'); // Adjust the path as needed
+const Group = require('./AgriTrack/AgriTrackWeb/models/group.js'); // Adjust the path as needed
 
 // Middleware to get group by ID
 async function getGroup(req, res, next) {

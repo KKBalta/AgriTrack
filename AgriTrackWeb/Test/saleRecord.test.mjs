@@ -1,7 +1,7 @@
 // saleRecord.test.mjs
 import { expect } from 'chai';
 import mongoose from 'mongoose';
-import SaleRecord from '/Users/kaanbalta/Documents/ITU_doc/fall/ise_304/AgriTrack/AgriTrackWeb/models/SalesRecord.js'; // Update this path as needed
+import SaleRecord from 'AgriTrack/AgriTrackWeb/models/SalesRecord.js'; // Update this path as needed
 
 describe('SaleRecord', function() {
     this.timeout(30000); // Timeout of 30 seconds for all tests and hooks in this describe block
