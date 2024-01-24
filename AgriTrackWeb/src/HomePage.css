@@ -4,7 +4,7 @@
   align-items: center;
   padding: 20px;
   /* Add a background image of your farm */
-  background: url('/Users/kaanbalta/Documents/ITU_doc/fall/ise_304/AgriTrack/AgriTrackWeb/src/data/FarmPicture.JPG') no-repeat center center;
+  background: url('data/FarmPicture.JPG') no-repeat center center;
   background-size: cover; /* Cover the entire background */
   min-height: 80vh; /* Set a minimum height to make the image prominent */
   width: 100%; /* Ensure the background covers the full width */

@@ -1,7 +1,7 @@
 //group.test.mjs
 import mongoose from 'mongoose';
 import { expect } from 'chai';
-import Group from '/Users/kaanbalta/Documents/ITU_doc/fall/ise_304/AgriTrack/AgriTrackWeb/models/group.js'; // Ensure this path is correct
+import Group from 'AgriTrack/AgriTrackWeb/models/group.js'; // Ensure this path is correct
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/AgriTrackData', {
