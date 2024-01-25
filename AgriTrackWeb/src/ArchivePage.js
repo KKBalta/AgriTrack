@@ -12,7 +12,7 @@ const ArchivePage = () => {
       { id: '1', date: '2024-01-15', info: 'Data for 2024', pdfUrl: 'data/2024.pdf' },
       { id: '2', date: '2023-03-22', info: 'Data for 2023', pdfUrl: 'data/2023.pdf' },
       { id: '3', date: '2022-07-05', info: 'Data for 2022', pdfUrl: 'data/2022.pdf' },
-      { id: '4', date: '2021-11-17', info: 'Data for 2021', pdfUrl: 'data/2021.pdf' }
+      { id: '4', date: '2021-11-17', info: 'Data for 2017', pdfUrl: 'data/2021.pdf' }
       // ... add more data as needed
     ]
   };
