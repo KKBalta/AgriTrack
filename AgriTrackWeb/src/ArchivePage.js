@@ -1,10 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import './ArchivePage.css';
 
-const ArchivePage = ({ archiveData }) => {
+const ArchivePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [yearsList, setYearsList] = useState([]);
   const [selectedYear, setSelectedYear] = useState(null);
+
+  // Dummy archive data
+  const archiveData = {
+    groupData: [
+      { id: '1', date: '2024-01-15', info: 'Data for 2024', pdfUrl: 'data/2024.pdf' },
+      { id: '2', date: '2023-03-22', info: 'Data for 2023', pdfUrl: 'data/2023.pdf' },
+      { id: '3', date: '2022-07-05', info: 'Data for 2022', pdfUrl: 'data/2022.pdf' },
+      { id: '4', date: '2021-11-17', info: 'Data for 2021', pdfUrl: 'data/2021.pdf' }
+      // ... add more data as needed
+    ]
+  };
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -14,22 +25,33 @@ const ArchivePage = ({ archiveData }) => {
     setSelectedYear(year);
   };
 
+  // Extract and sort the years when the component mounts or when archiveData changes
   useEffect(() => {
-    // Check if archiveData is defined before processing it
-    if (archiveData) {
-      // Extract the years from groupData and remove duplicates
-      const groupYears = Array.from(new Set(archiveData.groupData
-        .filter(entry => entry.date) // Filter out entries without a date property
-        .map((entry) => entry.date.substring(0, 4))
+    if (archiveData && archiveData.groupData) {
+      const groupYears = Array.from(new Set(
+        archiveData.groupData
+          .filter(entry => entry.date)
+          .map(entry => entry.date.substring(0, 4))
       ));
 
-      // Sort the years in descending order
       groupYears.sort((a, b) => b - a);
-
-      // Update the yearsList state
       setYearsList(groupYears);
     }
   }, [archiveData]);
+
+  // Renders the group data for the selected year
+  const renderGroupData = () => {
+    return archiveData.groupData
+      .filter(entry => entry.date && entry.date.startsWith(selectedYear))
+      .map((entry, index) => (
+        <div key={index} className="data-entry">
+          <p>ID: {entry.id}</p>
+          <p>Date: {entry.date}</p>
+          <p>Info: {entry.info}</p>
+          <a href={entry.pdfUrl} className="download-link" target="_blank" rel="noopener noreferrer">View PDF</a>
+        </div>
+      ));
+  };
 
   return (
     <div className="archive-page">
@@ -54,23 +76,16 @@ const ArchivePage = ({ archiveData }) => {
             >
               <strong>{`${year}-${parseInt(year) + 1}`}</strong>
               {year === selectedYear && (
-                <ul>
-                  {archiveData.groupData
-                    .filter(entry => entry.date && entry.date.startsWith(year)) // Filter by date
-                    .map((entry, entryIndex) => (
-                      <li key={entryIndex}>{/* Render entry details here */}</li>
-                    ))}
-                </ul>
+                <div className="year-data">
+                  {renderGroupData()}
+                </div>
               )}
             </div>
           ))}
         </div>
       </section>
 
-      <section className="archive-section">
-        <h2>Finance Archive</h2>
-        {/* Add similar code for displaying Finance Archive */}
-      </section>
+      {/* Implement similar logic for displaying other archive sections if needed */}
     </div>
   );
 };
