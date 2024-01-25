@@ -10,9 +10,8 @@ export default function GroupsPage({ updateArchiveData }) {
   });
   const [groupData, setGroupData] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [selectedIds, setSelectedIds] = useState([]);
+  const [selectedRow, setSelectedRow] = useState(null);
   const [showModifyForm, setShowModifyForm] = useState(false);
-  const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
 
   const [currentPage, setCurrentPage] = useState(1);
   const entriesPerPage = 20;
@@ -43,118 +42,106 @@ export default function GroupsPage({ updateArchiveData }) {
     }));
   };
 
-  const calculateDailyRate = (id, date, weight) => {
-    // Find the last entry for the given ID
-    const lastEntry = groupData
-      .filter((entry) => entry.id === id)
-      .sort((a, b) => new Date(b.date) - new Date(a.date))[0];
-
-    if (lastEntry) {
-      const lastWeight = parseFloat(lastEntry.weight);
-      const currentDate = new Date(date);
-      const lastDate = new Date(lastEntry.date);
-      const daysDifference = (currentDate - lastDate) / (1000 * 60 * 60 * 24);
-
-      if (daysDifference > 0) {
-        const dailyRate = (weight - lastWeight) / daysDifference;
-        return isNaN(dailyRate) ? 0 : dailyRate.toFixed(2);
-      }
-    }
-
-    return 0;
-  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    if (selectedRowIndex !== -1) {
-      const updatedGroupData = [...groupData];
-      updatedGroupData[selectedRowIndex] = formData;
-      setGroupData(updatedGroupData);
-      localStorage.setItem('groupData', JSON.stringify(updatedGroupData));
-      setSelectedRowIndex(-1);
-      setShowModifyForm(false);
+  
+    const { id, date, weight } = formData;
+  
+    let updatedGroupData = [...groupData];
+  
+    if (selectedRow !== null) {
+      // Update the selected entry
+      updatedGroupData[selectedRow] = { ...updatedGroupData[selectedRow], ...formData };
     } else {
-      const { id, date, weight } = formData;
-      const dailyRate = calculateDailyRate(id, date, weight);
-      const newEntry = {
-        id,
-        date,
-        weight,
-        rate: dailyRate,
-      };
-      const updatedGroupData = [...groupData, newEntry];
-      setGroupData(updatedGroupData);
-      localStorage.setItem('groupData', JSON.stringify(updatedGroupData));
+      // Create a new entry and add it to the group data
+      updatedGroupData.push({ id, date, weight, rate: 0 }); // Initial rate is set to 0 and will be recalculated
     }
-
+  
+    // Recalculate rates for all entries with the same ID
+    const relatedEntries = updatedGroupData.filter(entry => entry.id === id);
+    relatedEntries.sort((a, b) => new Date(a.date) - new Date(b.date));
+  
+    for (let i = 0; i < relatedEntries.length; i++) {
+      if (i === 0) {
+        // The first entry won't have a previous entry to compare with
+        relatedEntries[i].rate = "N/A";
+      } else {
+        const previousEntry = relatedEntries[i - 1];
+        const daysDifference = (new Date(relatedEntries[i].date) - new Date(previousEntry.date)) / (1000 * 60 * 60 * 24);
+        if (daysDifference > 0) {
+          const dailyRate = (relatedEntries[i].weight - previousEntry.weight) / daysDifference;
+          relatedEntries[i].rate = isNaN(dailyRate) ? 0 : dailyRate.toFixed(2);
+        } else {
+          relatedEntries[i].rate = "N/A"; // If dates are the same or invalid, rate cannot be calculated
+        }
+      }
+    }
+  
+    // Update the main groupData array with recalculated rates
+    updatedGroupData = updatedGroupData.map(entry => {
+      const relatedEntry = relatedEntries.find(e => e.date === entry.date && e.id === entry.id);
+      return relatedEntry || entry;
+    });
+  
+    setGroupData(updatedGroupData);
+    localStorage.setItem('groupData', JSON.stringify(updatedGroupData));
+    setSelectedRow(null);
+    setShowModifyForm(false);
     setShowCreateForm(false);
     setFormData({ id: '', date: '', weight: '', rate: 0 });
     const year = formData.date.substring(0, 4);
     updateArchiveData(year, 'groupData');
   };
+  
 
-  const handleRowClick = (identifier) => {
-    if (selectedIds.includes(identifier)) {
-      setSelectedIds(selectedIds.filter((id) => id !== identifier));
-    } else {
-      setSelectedIds([...selectedIds, identifier]);
-    }
-  };
-  
-  
-  
+const handleRowClick = (index) => {
+  if (selectedRow === index) {
+    setSelectedRow(null);
+  } else {
+    setSelectedRow(index);
+  }
+};
+
   
   
 
   const handleCreateClick = () => {
-    if (showCreateForm) {
-      setShowCreateForm(false);
-      setShowModifyForm(false);
-    } else {
+    setShowCreateForm((prevShowCreateForm) => !prevShowCreateForm);
+    setShowModifyForm(false);
+    if (!showCreateForm) {
       setFormData({ id: '', date: '', weight: '', rate: 0 });
-      setShowCreateForm(true);
     }
   };
 
   const handleModifyClick = () => {
-    if (selectedIds.length === 1) {
-      const selectedId = selectedIds[0];
-      const selectedIndex = groupData.findIndex((entry) => entry.id === selectedId);
-
-      if (selectedIndex !== -1) {
-        const entryToModify = groupData[selectedIndex];
-        setFormData(entryToModify);
-        setSelectedRowIndex(selectedIndex);
-        setShowCreateForm(true);
-        setShowModifyForm(true);
-      }
+    if (selectedRow !== null) {
+      const entryToModify = groupData[selectedRow];
+      setFormData(entryToModify);
+      setShowCreateForm(true);
+      setShowModifyForm(true);
     } else {
       alert('Please select exactly one item to modify.');
     }
   };
 
   const handleDelete = () => {
-    if (selectedIds.length > 0) {
-      const confirmDelete = window.confirm('Are you sure you want to delete the selected rows?');
+    if (selectedRow !== null) {
+      const confirmDelete = window.confirm('Are you sure you want to delete the selected row?');
       if (confirmDelete) {
-        const updatedGroupData = groupData.filter((entry, index) => {
-          const identifier = entry.id || `empty-${index}`;
-          return !selectedIds.includes(identifier);
-        });
+        const updatedGroupData = groupData.filter((_, index) => index !== selectedRow);
         setGroupData(updatedGroupData);
         localStorage.setItem('groupData', JSON.stringify(updatedGroupData));
-        setSelectedIds([]);
+        setSelectedRow(null);
       }
     } else {
-      alert('Please select rows to delete.');
+      alert('Please select a row to delete.');
     }
   };
-
   return (
     <div className="groups-page">
       <h1>Groups</h1>
-
+  
       {showCreateForm || showModifyForm ? (
         <form onSubmit={handleSubmit}>
           <div className="input-group">
@@ -164,7 +151,7 @@ export default function GroupsPage({ updateArchiveData }) {
               name="id"
               value={formData.id}
               onChange={handleInputChange}
-              readOnly={selectedRowIndex !== -1}
+              readOnly={selectedRow !== null}
             />
           </div>
           <div className="input-group">
@@ -186,11 +173,11 @@ export default function GroupsPage({ updateArchiveData }) {
             />
           </div>
           <button type="submit" className="save-changes-button">
-            {selectedRowIndex !== -1 ? 'Save Changes' : 'Save'}
+            {selectedRow !== null ? 'Save Changes' : 'Save'}
           </button>
         </form>
       ) : null}
-
+  
       <div className="form-and-table-container">
         <table className="groups-table">
           <thead>
@@ -205,8 +192,8 @@ export default function GroupsPage({ updateArchiveData }) {
             {currentEntries.map((entry, index) => (
               <tr
                 key={index}
-                className={selectedIds.includes(entry.id || `empty-${index}`) ? 'selected-row' : ''}
-                onClick={() => handleRowClick(entry.id || `empty-${index}`)}
+                className={selectedRow === index ? 'selected-row' : ''}
+                onClick={() => handleRowClick(index)}
               >
                 <td>{entry.id}</td>
                 <td>{entry.date}</td>
@@ -217,7 +204,7 @@ export default function GroupsPage({ updateArchiveData }) {
           </tbody>
         </table>
       </div>
-
+  
       <div className="button-group">
         {!showCreateForm && (
           <button onClick={handleCreateClick} className="create-button">
@@ -229,18 +216,18 @@ export default function GroupsPage({ updateArchiveData }) {
             Cancel
           </button>
         )}
-        <button onClick={handleModifyClick} className="modify-button">
+        <button onClick={handleModifyClick} className="modify-button" disabled={selectedRow === null}>
           ✏️ Modify
         </button>
         <button
           onClick={handleDelete}
-          disabled={selectedIds.length === 0}
+          disabled={selectedRow === null}
           className="delete-button"
         >
           🗑️ Delete
         </button>
       </div>
-
+  
       <div className="pagination">
         {pageNumbers.map((number) => (
           <button
@@ -254,4 +241,5 @@ export default function GroupsPage({ updateArchiveData }) {
       </div>
     </div>
   );
+  
 }
